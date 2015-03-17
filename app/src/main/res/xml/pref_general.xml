@@ -5,7 +5,9 @@
         android:inputType="textUri"
         android:key="@string/pref_cs_addr_key"
         android:maxLines="1"
+        android:selectAllOnFocus="true"
         android:singleLine="true"
-        android:title="@string/pref_title_cs_addr" />
+        android:title="@string/pref_title_cs_addr"
+        android:typeface="monospace" />
 
 </PreferenceScreen>
