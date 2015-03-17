@@ -1,6 +1,9 @@
 package io.github.arpankapoor.opensesame;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -72,7 +75,20 @@ public class GridViewFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        updateCamInfo();
+
+        // Check if we have internet
+        ConnectivityManager cm =
+                (ConnectivityManager) getActivity()
+                        .getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+
+        if (!isConnected) {
+            Toast.makeText(getActivity(), R.string.err_no_net, Toast.LENGTH_LONG).show();
+        } else {
+            updateCamInfo();
+        }
     }
 
     public class FetchCamTask extends AsyncTask<Void, Void, String[]> {
