@@ -1,0 +1,11 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <EditTextPreference
+        android:defaultValue="@string/pref_default_cs_addr"
+        android:inputType="textUri"
+        android:key="@string/pref_cs_addr_key"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:title="@string/pref_title_cs_addr" />
+
+</PreferenceScreen>
