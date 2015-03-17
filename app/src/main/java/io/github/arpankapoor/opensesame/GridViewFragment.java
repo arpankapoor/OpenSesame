@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -164,6 +165,10 @@ public class GridViewFragment extends Fragment {
                 for (String cam : result) {
                     mCamAdapter.add(cam);
                 }
+            }
+
+            if (mCamAdapter == null || mCamAdapter.isEmpty()) {
+                Toast.makeText(getActivity(), R.string.err_no_cams, Toast.LENGTH_LONG).show();
             }
         }
     }

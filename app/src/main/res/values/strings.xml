@@ -7,4 +7,6 @@
     <string name="pref_cs_addr_key" translatable="false">cs_addr</string>
     <string name="pref_title_cs_addr">Central server</string>
     <string name="pref_default_cs_addr">athena.nitc.ac.in</string>
+
+    <string name="err_no_cams">Couldn\'t get camera list</string>
 </resources>
