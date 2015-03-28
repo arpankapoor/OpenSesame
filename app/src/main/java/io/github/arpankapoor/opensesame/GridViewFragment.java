@@ -14,7 +14,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.Toast;
 
@@ -28,11 +27,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 
 public class GridViewFragment extends Fragment {
 
-    private ArrayAdapter<CamInfo> mCamAdapter;
+    private CamInfoAdapter mCamAdapter;
 
     public GridViewFragment() {
         // Required empty public constructor
@@ -46,12 +44,7 @@ public class GridViewFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mCamAdapter =
-                new ArrayAdapter<>(
-                        getActivity(),
-                        R.layout.grid_item,
-                        R.id.grid_item_textview,
-                        new ArrayList<CamInfo>());
+        mCamAdapter = new CamInfoAdapter(getActivity());
 
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_grid_view, container, false);
