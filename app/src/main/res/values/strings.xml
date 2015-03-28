@@ -10,4 +10,14 @@
 
     <string name="err_no_net">No connection</string>
     <string name="err_no_cams">Couldn\'t get camera list</string>
+    <string name="err_video">Can\'t play this video</string>
+
+    <string name="json_list_key">cameras</string>
+    <string name="json_id_key">id</string>
+    <string name="json_name_key">name</string>
+    <string name="json_is_private_key">is_private</string>
+    <string name="json_status_key">status</string>
+
+    <string name="cam_list_query_url">/cgi-bin/get_cam_info.py</string>
+    <string name="video_format">.webm</string>
 </resources>

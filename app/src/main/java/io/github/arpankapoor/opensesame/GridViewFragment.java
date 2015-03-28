@@ -2,10 +2,12 @@ package io.github.arpankapoor.opensesame;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,7 +32,7 @@ import java.util.ArrayList;
 
 public class GridViewFragment extends Fragment {
 
-    private ArrayAdapter<String> mCamAdapter;
+    private ArrayAdapter<CamInfo> mCamAdapter;
 
     public GridViewFragment() {
         // Required empty public constructor
@@ -49,7 +51,7 @@ public class GridViewFragment extends Fragment {
                         getActivity(),
                         R.layout.grid_item,
                         R.id.grid_item_textview,
-                        new ArrayList<String>());
+                        new ArrayList<CamInfo>());
 
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_grid_view, container, false);
@@ -59,7 +61,9 @@ public class GridViewFragment extends Fragment {
 
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                Intent intent = new Intent(getActivity(), VideoActivity.class);
+                CamInfo camInfo = mCamAdapter.getItem(position);
+                Intent intent = new Intent(getActivity(), VideoActivity.class)
+                        .putExtra(Intent.EXTRA_TEXT, camInfo.id);
                 startActivity(intent);
             }
         });
@@ -69,7 +73,10 @@ public class GridViewFragment extends Fragment {
 
     private void updateCamInfo() {
         FetchCamTask camTask = new FetchCamTask();
-        camTask.execute();
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String centralServer = preferences.getString(getString(R.string.pref_cs_addr_key),
+                getString(R.string.pref_default_cs_addr));
+        camTask.execute(centralServer);
     }
 
     @Override
@@ -91,29 +98,33 @@ public class GridViewFragment extends Fragment {
         }
     }
 
-    public class FetchCamTask extends AsyncTask<Void, Void, String[]> {
+    public class FetchCamTask extends AsyncTask<String, Void, CamInfo[]> {
 
         private final String LOG_TAG = FetchCamTask.class.getSimpleName();
 
-        private String[] getCamDataFromJson(String camJsonstr) throws JSONException {
+        private CamInfo[] getCamDataFromJson(String camJsonStr) throws JSONException {
 
-            JSONObject camJson = new JSONObject(camJsonstr);
-            JSONArray camArray = camJson.getJSONArray("cameras");
+            JSONObject camJson = new JSONObject(camJsonStr);
+            JSONArray camArray = camJson.getJSONArray(getString(R.string.json_list_key));
 
             int noOfCams = camArray.length();
-            String[] resultStrs = new String[noOfCams];
+            CamInfo[] camInfo = new CamInfo[noOfCams];
 
             for (int i = 0; i < noOfCams; ++i) {
-
                 JSONObject cam = camArray.getJSONObject(i);
-                resultStrs[i] = cam.getString("name");
+
+                camInfo[i] = new CamInfo();
+                camInfo[i].id = cam.getInt(getString(R.string.json_id_key));
+                camInfo[i].isPrivate = cam.getInt(getString(R.string.json_is_private_key)) == 1;
+                camInfo[i].name = cam.getString(getString(R.string.json_name_key));
+                camInfo[i].status = cam.getInt(getString(R.string.json_status_key)) == 1;
             }
 
-            return resultStrs;
+            return camInfo;
         }
 
         @Override
-        protected String[] doInBackground(Void... params) {
+        protected CamInfo[] doInBackground(String... params) {
 
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
@@ -121,9 +132,9 @@ public class GridViewFragment extends Fragment {
             String camJsonStr = null;
 
             try {
-                final String BASE_URL = "http://192.168.0.101/cgi-bin/get_cam_info.py";
+                final String BASE_URL = params[0];
 
-                URL url = new URL(BASE_URL);
+                URL url = new URL("http", BASE_URL, getString(R.string.cam_list_query_url));
 
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");
@@ -175,10 +186,10 @@ public class GridViewFragment extends Fragment {
         }
 
         @Override
-        protected void onPostExecute(String[] result) {
+        protected void onPostExecute(CamInfo[] result) {
             if (result != null) {
                 mCamAdapter.clear();
-                for (String cam : result) {
+                for (CamInfo cam : result) {
                     mCamAdapter.add(cam);
                 }
             }
